@@ -1,19 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Danh sách đám</title>
+  <title>Quản lý tiền đám</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h2>Quản lý đám</h2>
+<h1>Danh sách các đám</h1>
 
-<input id="searchDam" placeholder="Tìm đám..." oninput="render()">
-<input id="damName" placeholder="Tên đám">
-<button onclick="addDam()">➕ Thêm đám</button>
+<div class="box">
+  <input id="searchDam" class="search" placeholder="🔍 Tìm tên đám...">
+  <input id="damName" placeholder="Tên đám">
+  <button onclick="addDam()">➕ Thêm đám</button>
+</div>
 
-<div id="list"></div>
+<div class="box">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Tên đám</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody id="damList"></tbody>
+  </table>
+</div>
 
 <script type="module" src="js/main.js"></script>
 </body>
