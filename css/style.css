@@ -1,0 +1,16 @@
+body {
+  font-family: Arial;
+  max-width: 500px;
+  margin: auto;
+}
+
+input, button {
+  width: 100%;
+  margin: 4px 0;
+  padding: 6px;
+}
+
+.item {
+  border-bottom: 1px solid #ccc;
+  padding: 5px;
+}
