@@ -2,31 +2,54 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Quản lý tiền đám</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Tiền Đám</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🎉 Quản Lý Tiền Đám</h1>
+      <p>Theo dõi chi tiết các đám cưới và sự kiện</p>
+    </div>
 
-<h1>Danh sách các đám</h1>
+    <!-- Search Section -->
+    <div class="search-section">
+      <input 
+        type="text" 
+        id="searchInput" 
+        class="search-box" 
+        placeholder="🔍 Tìm kiếm đám..."
+      >
+    </div>
 
-<div class="box">
-  <input id="searchDam" class="search" placeholder="🔍 Tìm tên đám...">
-  <input id="damName" placeholder="Tên đám">
-  <button onclick="addDam()">➕ Thêm đám</button>
-</div>
+    <!-- Add Button -->
+    <div class="add-section">
+      <button class="btn btn-primary" id="addDamBtn">➕ Thêm Đám Mới</button>
+    </div>
 
-<div class="box">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Tên đám</th>
-        <th>Hành động</th>
-      </tr>
-    </thead>
-    <tbody id="damList"></tbody>
-  </table>
-</div>
+    <!-- Dam List Table -->
+    <div class="table-container">
+      <table id="damTable">
+        <thead>
+          <tr>
+            <th>Tên Đám</th>
+            <th>Tổng Tiền Mừng</th>
+            <th>Tổng Chi Phí</th>
+            <th>Lãi/Lỗ</th>
+            <th>Thao Tác</th>
+          </tr>
+        </thead>
+        <tbody id="damList">
+          <tr>
+            <td colspan="5" class="loading">Đang tải dữ liệu</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-<script type="module" src="js/main.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
