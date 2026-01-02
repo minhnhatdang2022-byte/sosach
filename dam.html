@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
   <meta charset="UTF-8">
   <title>Chi tiết đám</title>
@@ -7,27 +7,27 @@
 </head>
 <body>
 
-<a href="index.html">⬅ Quay lại</a>
-<h2 id="damTitle"></h2>
+<button onclick="back()">⬅ Quay lại</button>
+<h2 id="title"></h2>
 
 <h3>Tiền mừng</h3>
-<input id="searchGuest" placeholder="Tìm người mừng...">
-<input id="guestName" placeholder="Tên người mừng">
-<input id="guestMoney" type="number" placeholder="Số tiền">
-<button onclick="addGuest()">Thêm</button>
+<input id="searchName" placeholder="Tìm người mừng..." oninput="render()">
+<input id="name" placeholder="Tên người mừng">
+<input id="money" type="number" placeholder="Số tiền">
+<button onclick="addGift()">➕ Thêm</button>
 
-<div id="guestList"></div>
-<p id="totalMoney"></p>
+<div id="giftList"></div>
+<p><b>Tổng tiền:</b> <span id="totalGift">0</span></p>
 
 <h3>Chi phí</h3>
 <input id="costName" placeholder="Tên chi phí">
 <input id="costMoney" type="number" placeholder="Số tiền">
-<button onclick="addCost()">Thêm</button>
+<button onclick="addCost()">➕ Thêm</button>
 
 <div id="costList"></div>
-<p id="totalCost"></p>
+<p><b>Tổng chi:</b> <span id="totalCost">0</span></p>
 
-<h3 id="profit"></h3>
+<p><b>Lãi / Lỗ:</b> <span id="profit">0</span></p>
 
 <script type="module" src="js/dam.js"></script>
 </body>
