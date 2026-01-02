@@ -12,31 +12,28 @@
     <div class="back-button">
       <button class="btn btn-primary" onclick="window.location.href='index.html'">⬅️ Quay Lại</button>
     </div>
-
     <!-- Header -->
     <div class="header">
       <h1 id="damName">Đang tải...</h1>
-      <p>Chi tiết tiền mừng và chi phí</p>
+      <p>Chi tiết tiền thu và chi phí</p>
     </div>
-
-    <!-- Section 1: Tiền Mừng -->
+    <!-- Section 1: Tiền Thu -->
     <div class="section">
-      <h2>💰 Tiền Mừng</h2>
-      
+      <h2>💰 Tiền Thu</h2>
+
       <!-- Search Box -->
       <div class="search-section">
         <input 
           type="text" 
           id="searchGuest" 
           class="search-box" 
-          placeholder="🔍 Tìm kiếm người mừng..."
+          placeholder="🔍 Tìm kiếm người đóng ..."
         >
       </div>
-
       <!-- Form thêm tiền mừng -->
       <form id="formTienMung" class="form-inline">
         <div class="form-group">
-          <label>Tên người mừng</label>
+          <label>Tên người đóng</label>
           <input type="text" id="guestName" required>
         </div>
         <div class="form-group">
@@ -48,13 +45,12 @@
           <button type="submit" class="btn btn-success">➕ Thêm</button>
         </div>
       </form>
-
-      <!-- Bảng tiền mừng -->
+      <!-- Bảng tiền thu -->
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>Tên Người Mừng</th>
+              <th>Tên Người Đóng</th>
               <th>Số Tiền</th>
               <th>Thao Tác</th>
             </tr>
@@ -67,11 +63,9 @@
         </table>
       </div>
     </div>
-
     <!-- Section 2: Chi Phí -->
     <div class="section">
       <h2>💸 Chi Phí Tổ Chức</h2>
-
       <!-- Form thêm chi phí -->
       <form id="formChiPhi" class="form-inline">
         <div class="form-group">
@@ -87,7 +81,6 @@
           <button type="submit" class="btn btn-success">➕ Thêm</button>
         </div>
       </form>
-
       <!-- Bảng chi phí -->
       <div class="table-container">
         <table>
@@ -106,13 +99,12 @@
         </table>
       </div>
     </div>
-
     <!-- Section 3: Tổng Kết -->
     <div class="section">
       <h2>📊 Tổng Kết</h2>
       <div class="summary-box">
         <div class="summary-item">
-          <h3>Tổng Tiền Mừng</h3>
+          <h3>Tổng Tiền Thu</h3>
           <div class="amount" id="totalTienMung">0đ</div>
         </div>
         <div class="summary-item">
@@ -126,7 +118,6 @@
       </div>
     </div>
   </div>
-
   <script type="module" src="js/dam.js"></script>
 </body>
 </html>
