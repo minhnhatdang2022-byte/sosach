@@ -2,35 +2,131 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Chi tiết đám</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi Tiết Đám</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <div class="container">
+    <!-- Back Button -->
+    <div class="back-button">
+      <button class="btn btn-primary" onclick="window.location.href='index.html'">⬅️ Quay Lại</button>
+    </div>
 
-<h2>Tiền mừng</h2>
+    <!-- Header -->
+    <div class="header">
+      <h1 id="damName">Đang tải...</h1>
+      <p>Chi tiết tiền mừng và chi phí</p>
+    </div>
 
-<div class="box">
-  <input id="searchName" class="search" placeholder="🔍 Tìm người mừng">
-  <input id="name" placeholder="Tên người mừng">
-  <input id="money" type="number" placeholder="Số tiền">
-  <button onclick="addGift()">➕ Thêm</button>
-</div>
+    <!-- Section 1: Tiền Mừng -->
+    <div class="section">
+      <h2>💰 Tiền Mừng</h2>
+      
+      <!-- Search Box -->
+      <div class="search-section">
+        <input 
+          type="text" 
+          id="searchGuest" 
+          class="search-box" 
+          placeholder="🔍 Tìm kiếm người mừng..."
+        >
+      </div>
 
-<div class="box">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Tên</th>
-        <th>Tiền</th>
-        <th>Hành động</th>
-      </tr>
-    </thead>
-    <tbody id="giftList"></tbody>
-  </table>
-</div>
+      <!-- Form thêm tiền mừng -->
+      <form id="formTienMung" class="form-inline">
+        <div class="form-group">
+          <label>Tên người mừng</label>
+          <input type="text" id="guestName" required>
+        </div>
+        <div class="form-group">
+          <label>Số tiền</label>
+          <input type="number" id="guestAmount" required min="0">
+        </div>
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <button type="submit" class="btn btn-success">➕ Thêm</button>
+        </div>
+      </form>
 
-<h3 id="total"></h3>
+      <!-- Bảng tiền mừng -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Tên Người Mừng</th>
+              <th>Số Tiền</th>
+              <th>Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="tienMungList">
+            <tr>
+              <td colspan="3" class="loading">Đang tải</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-<script type="module" src="js/dam.js"></script>
+    <!-- Section 2: Chi Phí -->
+    <div class="section">
+      <h2>💸 Chi Phí Tổ Chức</h2>
+
+      <!-- Form thêm chi phí -->
+      <form id="formChiPhi" class="form-inline">
+        <div class="form-group">
+          <label>Tên chi phí</label>
+          <input type="text" id="expenseName" required>
+        </div>
+        <div class="form-group">
+          <label>Số tiền</label>
+          <input type="number" id="expenseAmount" required min="0">
+        </div>
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <button type="submit" class="btn btn-success">➕ Thêm</button>
+        </div>
+      </form>
+
+      <!-- Bảng chi phí -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Tên Chi Phí</th>
+              <th>Số Tiền</th>
+              <th>Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="chiPhiList">
+            <tr>
+              <td colspan="3" class="loading">Đang tải</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 3: Tổng Kết -->
+    <div class="section">
+      <h2>📊 Tổng Kết</h2>
+      <div class="summary-box">
+        <div class="summary-item">
+          <h3>Tổng Tiền Mừng</h3>
+          <div class="amount" id="totalTienMung">0đ</div>
+        </div>
+        <div class="summary-item">
+          <h3>Tổng Chi Phí</h3>
+          <div class="amount" id="totalChiPhi">0đ</div>
+        </div>
+        <div class="summary-item" id="laiLoBox">
+          <h3>Lãi/Lỗ</h3>
+          <div class="amount" id="laiLo">0đ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/dam.js"></script>
 </body>
 </html>
