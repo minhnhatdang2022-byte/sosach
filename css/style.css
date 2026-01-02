@@ -1,6 +1,6 @@
 body {
   font-family: Arial;
-  max-width: 500px;
+  max-width: 600px;
   margin: auto;
 }
 
@@ -12,5 +12,9 @@ input, button {
 
 .item {
   border-bottom: 1px solid #ccc;
-  padding: 5px;
+  padding: 6px;
+}
+
+button {
+  cursor: pointer;
 }
