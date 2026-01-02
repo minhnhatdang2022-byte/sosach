@@ -1,62 +1,74 @@
 import { db } from "./firebase.js";
-import { ref, push, onValue } 
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { ref, push, onValue, remove, update } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
 
 const id = new URLSearchParams(location.search).get("id");
-const damRef = ref(db, `dams/${id}`);
+const damRef = ref(db, "dams/" + id);
 
-const guestRef = ref(db, `dams/${id}/guests`);
-const costRef = ref(db, `dams/${id}/costs`);
+let gifts = {}, costs = {};
 
-window.addGuest = () => {
-  push(guestRef, {
-    name: guestName.value,
-    money: Number(guestMoney.value)
+window.back = () => history.back();
+
+onValue(damRef, snap => {
+  const d = snap.val();
+  title.innerText = d.name;
+  gifts = d.gifts || {};
+  costs = d.costs || {};
+  render();
+});
+
+window.addGift = () => {
+  if (!name.value || !money.value) return;
+  push(ref(db, `dams/${id}/gifts`), {
+    name: name.value,
+    money: Number(money.value)
   });
+  name.value = money.value = "";
 };
 
 window.addCost = () => {
-  push(costRef, {
+  if (!costName.value || !costMoney.value) return;
+  push(ref(db, `dams/${id}/costs`), {
     name: costName.value,
     money: Number(costMoney.value)
   });
+  costName.value = costMoney.value = "";
 };
 
-let totalGuest = 0;
-let totalCostVal = 0;
+window.del = path => {
+  if (confirm("Xóa?")) remove(ref(db, path));
+};
 
-onValue(damRef, s => {
-  damTitle.innerText = s.val().name;
-});
+window.edit = (path, field, value) => {
+  update(ref(db, path), { [field]: value });
+};
 
-onValue(guestRef, s => {
-  guestList.innerHTML = "";
-  totalGuest = 0;
-  const key = searchGuest.value?.toLowerCase() || "";
+window.render = () => {
+  const k = searchName.value.toLowerCase();
+  let tg = 0, tc = 0;
 
-  s.forEach(g => {
-    if (!g.val().name.toLowerCase().includes(key)) return;
-    totalGuest += g.val().money;
-    guestList.innerHTML += `<div>${g.val().name}: ${g.val().money}</div>`;
+  giftList.innerHTML = "";
+  Object.entries(gifts).forEach(([i, g]) => {
+    if (!g.name.toLowerCase().includes(k)) return;
+    tg += g.money;
+    giftList.innerHTML += `
+      <div class="item">
+        ${g.name} - ${g.money}
+        <button onclick="del('dams/${id}/gifts/${i}')">X</button>
+      </div>`;
   });
-  totalMoney.innerText = "Tổng tiền mừng: " + totalGuest;
-  updateProfit();
-});
 
-onValue(costRef, s => {
   costList.innerHTML = "";
-  totalCostVal = 0;
-
-  s.forEach(c => {
-    totalCostVal += c.val().money;
-    costList.innerHTML += `<div>${c.val().name}: ${c.val().money}</div>`;
+  Object.entries(costs).forEach(([i, c]) => {
+    tc += c.money;
+    costList.innerHTML += `
+      <div class="item">
+        ${c.name} - ${c.money}
+        <button onclick="del('dams/${id}/costs/${i}')">X</button>
+      </div>`;
   });
-  totalCost.innerText = "Tổng chi phí: " + totalCostVal;
-  updateProfit();
-});
 
-searchGuest.oninput = () => onValue(guestRef, () => {});
-
-function updateProfit() {
-  profit.innerText = "Lãi / Lỗ: " + (totalGuest - totalCostVal);
-}
+  totalGift.innerText = tg;
+  totalCost.innerText = tc;
+  profit.innerText = tg - tc;
+};
