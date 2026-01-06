@@ -1,18 +1,52 @@
 // js/main.js
-import { database } from './firebase.js';
+import { database, isAdmin, formatMoney, calculateTotal } from './firebase.js';
+import { checkAuth, logout } from './auth-check.js';
 import { ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
 
-// Biến lưu trữ dữ liệu
+// Biến lưu trữ
+let currentUser = null;
 let allDams = {};
 
-// Khởi tạo khi trang load
-document.addEventListener('DOMContentLoaded', () => {
-  loadDams();
-  setupEventListeners();
+// Khởi tạo
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    // Kiểm tra đăng nhập
+    currentUser = await checkAuth();
+    
+    // Hiển thị tên user
+    loadUserInfo();
+    
+    // Load danh sách đám
+    loadDams();
+    
+    // Setup event listeners
+    setupEventListeners();
+  } catch (error) {
+    console.error('Auth error:', error);
+  }
 });
 
-// Thiết lập các event listeners
+// Load thông tin user
+function loadUserInfo() {
+  const userNameEl = document.getElementById('userName');
+  userNameEl.textContent = currentUser.email;
+  
+  // Hiển thị nút admin nếu là admin
+  if (isAdmin(currentUser.email)) {
+    document.getElementById('adminBtn').style.display = 'inline-block';
+  }
+}
+
+// Thiết lập event listeners
 function setupEventListeners() {
+  // Nút đăng xuất
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+  
+  // Nút admin
+  document.getElementById('adminBtn').addEventListener('click', () => {
+    window.location.href = 'admin.html';
+  });
+  
   // Nút thêm đám
   document.getElementById('addDamBtn').addEventListener('click', addNewDam);
   
@@ -20,9 +54,9 @@ function setupEventListeners() {
   document.getElementById('searchInput').addEventListener('input', filterDams);
 }
 
-// Load danh sách đám từ Firebase
+// Load danh sách đám của user hiện tại
 function loadDams() {
-  const damsRef = ref(database, 'dams');
+  const damsRef = ref(database, `dams/${currentUser.uid}`);
   
   onValue(damsRef, (snapshot) => {
     const data = snapshot.val();
@@ -49,7 +83,12 @@ function displayDams(dams) {
 
   damList.innerHTML = '';
   
-  Object.entries(dams).forEach(([damId, damData]) => {
+  // Sắp xếp theo thời gian tạo (mới nhất lên đầu)
+  const sortedEntries = Object.entries(dams).sort((a, b) => {
+    return (b[1].createdAt || 0) - (a[1].createdAt || 0);
+  });
+  
+  sortedEntries.forEach(([damId, damData]) => {
     const row = createDamRow(damId, damData);
     damList.appendChild(row);
   });
@@ -73,33 +112,29 @@ function createDamRow(damId, damData) {
       ${laiLo >= 0 ? '+' : ''}${formatMoney(laiLo)}
     </td>
     <td class="action-buttons">
-      <button class="btn btn-warning btn-small" onclick="editDam('${damId}')">✏️ Sửa</button>
-      <button class="btn btn-danger btn-small" onclick="deleteDam('${damId}')">🗑️ Xóa</button>
+      <button class="btn btn-warning btn-small" data-id="${damId}">✏️ Sửa</button>
+      <button class="btn btn-danger btn-small" data-id="${damId}">🗑️ Xóa</button>
     </td>
   `;
   
-  // Click vào hàng để mở chi tiết (trừ nút)
-  tr.addEventListener('click', (e) => {
-    if (!e.target.classList.contains('btn')) {
-      window.location.href = `dam.html?id=${damId}`;
-    }
+  // Event cho nút sửa
+  tr.querySelector('.btn-warning').addEventListener('click', (e) => {
+    e.stopPropagation();
+    editDam(e.target.dataset.id);
+  });
+  
+  // Event cho nút xóa
+  tr.querySelector('.btn-danger').addEventListener('click', (e) => {
+    e.stopPropagation();
+    deleteDam(e.target.dataset.id);
+  });
+  
+  // Click vào hàng để mở chi tiết
+  tr.addEventListener('click', () => {
+    window.location.href = `dam.html?id=${damId}`;
   });
   
   return tr;
-}
-
-// Tính tổng tiền từ object
-function calculateTotal(dataObj) {
-  if (!dataObj) return 0;
-  return Object.values(dataObj).reduce((sum, item) => sum + (item.amount || 0), 0);
-}
-
-// Format tiền VND
-function formatMoney(amount) {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND'
-  }).format(amount);
 }
 
 // Thêm đám mới
@@ -111,7 +146,7 @@ function addNewDam() {
     return;
   }
   
-  const damsRef = ref(database, 'dams');
+  const damsRef = ref(database, `dams/${currentUser.uid}`);
   const newDamRef = push(damsRef);
   
   set(newDamRef, {
@@ -127,7 +162,7 @@ function addNewDam() {
 }
 
 // Sửa tên đám
-window.editDam = function(damId) {
+function editDam(damId) {
   const currentName = allDams[damId].name;
   const newName = prompt('Nhập tên mới:', currentName);
   
@@ -135,7 +170,7 @@ window.editDam = function(damId) {
     return;
   }
   
-  const damRef = ref(database, `dams/${damId}`);
+  const damRef = ref(database, `dams/${currentUser.uid}/${damId}`);
   update(damRef, {
     name: newName.trim()
   }).then(() => {
@@ -146,14 +181,14 @@ window.editDam = function(damId) {
 }
 
 // Xóa đám
-window.deleteDam = function(damId) {
+function deleteDam(damId) {
   const damName = allDams[damId].name;
   
   if (!confirm(`Bạn có chắc muốn xóa đám "${damName}"?\nTất cả dữ liệu sẽ bị xóa!`)) {
     return;
   }
   
-  const damRef = ref(database, `dams/${damId}`);
+  const damRef = ref(database, `dams/${currentUser.uid}/${damId}`);
   remove(damRef).then(() => {
     alert('Đã xóa đám!');
   }).catch((error) => {
