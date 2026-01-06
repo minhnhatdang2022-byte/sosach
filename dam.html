@@ -11,26 +11,30 @@
     <!-- Back Button -->
     <div class="back-button">
       <button class="btn btn-primary" onclick="window.location.href='index.html'">⬅️ Quay Lại</button>
+      <button class="btn btn-warning btn-small" id="logoutBtn" style="float: right;">🚪 Đăng Xuất</button>
     </div>
+
     <!-- Header -->
     <div class="header">
       <h1 id="damName">Đang tải...</h1>
       <p>Chi tiết tiền thu và chi phí</p>
     </div>
+
     <!-- Section 1: Tiền Thu -->
     <div class="section">
       <h2>💰 Tiền Thu</h2>
-
+      
       <!-- Search Box -->
       <div class="search-section">
         <input 
           type="text" 
           id="searchGuest" 
           class="search-box" 
-          placeholder="🔍 Tìm kiếm người đóng ..."
+          placeholder="🔍 Tìm kiếm người đóng..."
         >
       </div>
-      <!-- Form thêm tiền mừng -->
+
+      <!-- Form thêm tiền thu -->
       <form id="formTienMung" class="form-inline">
         <div class="form-group">
           <label>Tên người đóng</label>
@@ -45,6 +49,7 @@
           <button type="submit" class="btn btn-success">➕ Thêm</button>
         </div>
       </form>
+
       <!-- Bảng tiền thu -->
       <div class="table-container">
         <table>
@@ -63,9 +68,11 @@
         </table>
       </div>
     </div>
+
     <!-- Section 2: Chi Phí -->
     <div class="section">
       <h2>💸 Chi Phí Tổ Chức</h2>
+
       <!-- Form thêm chi phí -->
       <form id="formChiPhi" class="form-inline">
         <div class="form-group">
@@ -81,6 +88,7 @@
           <button type="submit" class="btn btn-success">➕ Thêm</button>
         </div>
       </form>
+
       <!-- Bảng chi phí -->
       <div class="table-container">
         <table>
@@ -99,6 +107,7 @@
         </table>
       </div>
     </div>
+
     <!-- Section 3: Tổng Kết -->
     <div class="section">
       <h2>📊 Tổng Kết</h2>
@@ -118,6 +127,7 @@
       </div>
     </div>
   </div>
+
   <script type="module" src="js/dam.js"></script>
 </body>
 </html>
