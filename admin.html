@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Trị - Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .user-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .user-card h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+    
+    .user-info {
+      color: #666;
+      margin-bottom: 15px;
+    }
+    
+    .user-info span {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .dam-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .dam-item:hover {
+      background: #e9ecef;
+    }
+    
+    .dam-summary {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>👑 Trang Quản Trị</h1>
+      <p>Xem tất cả người dùng và dữ liệu</p>
+      <div style="margin-top: 15px;">
+        <button class="btn btn-primary btn-small" onclick="window.location.href='index.html'">⬅️ Về Trang Chủ</button>
+        <button class="btn btn-warning btn-small" id="logoutBtn">🚪 Đăng Xuất</button>
+      </div>
+    </div>
+
+    <!-- User List -->
+    <div id="userList">
+      <div class="loading" style="text-align: center; padding: 40px;">
+        Đang tải dữ liệu người dùng...
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
