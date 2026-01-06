@@ -1,5 +1,6 @@
 // js/dam.js
-import { database } from './firebase.js';
+import { database, formatMoney, calculateTotal } from './firebase.js';
+import { checkAuth, logout } from './auth-check.js';
 import { ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
 
 // Lấy ID đám từ URL
@@ -7,6 +8,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const damId = urlParams.get('id');
 
 // Biến lưu trữ dữ liệu
+let currentUser = null;
 let currentDamData = null;
 let allTienMung = {};
 let allChiPhi = {};
@@ -16,24 +18,35 @@ if (!damId) {
   alert('Không tìm thấy ID đám!');
   window.location.href = 'index.html';
 } else {
-  document.addEventListener('DOMContentLoaded', () => {
-    loadDamData();
-    setupEventListeners();
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      // Kiểm tra đăng nhập
+      currentUser = await checkAuth();
+      
+      // Load dữ liệu đám
+      loadDamData();
+      
+      // Setup event listeners
+      setupEventListeners();
+    } catch (error) {
+      console.error('Auth error:', error);
+    }
   });
 }
 
-// Thiết lập các event listeners
+// Thiết lập event listeners
 function setupEventListeners() {
-  // Form tiền mừng - sử dụng submit event
-  const formTienMung = document.getElementById('formTienMung');
-  formTienMung.addEventListener('submit', (e) => {
+  // Nút đăng xuất
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+  
+  // Form tiền mừng
+  document.getElementById('formTienMung').addEventListener('submit', (e) => {
     e.preventDefault();
     addTienMung();
   });
   
-  // Form chi phí - sử dụng submit event
-  const formChiPhi = document.getElementById('formChiPhi');
-  formChiPhi.addEventListener('submit', (e) => {
+  // Form chi phí
+  document.getElementById('formChiPhi').addEventListener('submit', (e) => {
     e.preventDefault();
     addChiPhi();
   });
@@ -44,13 +57,13 @@ function setupEventListeners() {
 
 // Load dữ liệu đám từ Firebase
 function loadDamData() {
-  const damRef = ref(database, `dams/${damId}`);
+  const damRef = ref(database, `dams/${currentUser.uid}/${damId}`);
   
   onValue(damRef, (snapshot) => {
     const data = snapshot.val();
     
     if (!data) {
-      alert('Không tìm thấy dữ liệu đám!');
+      alert('Không tìm thấy dữ liệu đám hoặc bạn không có quyền truy cập!');
       window.location.href = 'index.html';
       return;
     }
@@ -79,7 +92,7 @@ function displayTienMung(tienMungData) {
     tbody.innerHTML = `
       <tr>
         <td colspan="3" class="empty-state">
-          <p>Chưa có người mừng nào</p>
+          <p>Chưa có người đóng nào</p>
         </td>
       </tr>
     `;
@@ -187,20 +200,6 @@ function updateSummary() {
   }
 }
 
-// Tính tổng tiền từ object
-function calculateTotal(dataObj) {
-  if (!dataObj || Object.keys(dataObj).length === 0) return 0;
-  return Object.values(dataObj).reduce((sum, item) => sum + (parseInt(item.amount) || 0), 0);
-}
-
-// Format số tiền theo VND
-function formatMoney(amount) {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND'
-  }).format(amount);
-}
-
 // Thêm tiền mừng mới
 function addTienMung() {
   const nameInput = document.getElementById('guestName');
@@ -211,7 +210,7 @@ function addTienMung() {
   
   // Validate
   if (!name) {
-    alert('Vui lòng nhập tên người mừng!');
+    alert('Vui lòng nhập tên người đóng!');
     nameInput.focus();
     return;
   }
@@ -223,7 +222,7 @@ function addTienMung() {
   }
   
   // Push dữ liệu lên Firebase
-  const tienMungRef = ref(database, `dams/${damId}/tienMung`);
+  const tienMungRef = ref(database, `dams/${currentUser.uid}/${damId}/tienMung`);
   const newRef = push(tienMungRef);
   
   set(newRef, {
@@ -235,7 +234,7 @@ function addTienMung() {
     document.getElementById('formTienMung').reset();
     nameInput.focus();
   }).catch((error) => {
-    alert('Lỗi khi thêm tiền mừng: ' + error.message);
+    alert('Lỗi khi thêm tiền thu: ' + error.message);
   });
 }
 
@@ -248,7 +247,7 @@ function editTienMung(guestId) {
     return;
   }
   
-  const newName = prompt('Nhập tên người mừng:', guest.name);
+  const newName = prompt('Nhập tên người đóng:', guest.name);
   
   if (!newName || newName.trim() === '') {
     return;
@@ -262,7 +261,7 @@ function editTienMung(guestId) {
   }
   
   // Cập nhật Firebase
-  const guestRef = ref(database, `dams/${damId}/tienMung/${guestId}`);
+  const guestRef = ref(database, `dams/${currentUser.uid}/${damId}/tienMung/${guestId}`);
   update(guestRef, {
     name: newName.trim(),
     amount: parseInt(newAmount)
@@ -287,7 +286,7 @@ function deleteTienMung(guestId) {
   }
   
   // Xóa khỏi Firebase
-  const guestRef = ref(database, `dams/${damId}/tienMung/${guestId}`);
+  const guestRef = ref(database, `dams/${currentUser.uid}/${damId}/tienMung/${guestId}`);
   remove(guestRef).then(() => {
     alert('Đã xóa thành công!');
   }).catch((error) => {
@@ -317,7 +316,7 @@ function addChiPhi() {
   }
   
   // Push dữ liệu lên Firebase
-  const chiPhiRef = ref(database, `dams/${damId}/chiPhi`);
+  const chiPhiRef = ref(database, `dams/${currentUser.uid}/${damId}/chiPhi`);
   const newRef = push(chiPhiRef);
   
   set(newRef, {
@@ -356,7 +355,7 @@ function editChiPhi(expenseId) {
   }
   
   // Cập nhật Firebase
-  const expenseRef = ref(database, `dams/${damId}/chiPhi/${expenseId}`);
+  const expenseRef = ref(database, `dams/${currentUser.uid}/${damId}/chiPhi/${expenseId}`);
   update(expenseRef, {
     name: newName.trim(),
     amount: parseInt(newAmount)
@@ -381,7 +380,7 @@ function deleteChiPhi(expenseId) {
   }
   
   // Xóa khỏi Firebase
-  const expenseRef = ref(database, `dams/${damId}/chiPhi/${expenseId}`);
+  const expenseRef = ref(database, `dams/${currentUser.uid}/${damId}/chiPhi/${expenseId}`);
   remove(expenseRef).then(() => {
     alert('Đã xóa thành công!');
   }).catch((error) => {
